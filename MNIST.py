@@ -111,6 +111,9 @@ class MnistCNN():
 
         print('/n' + " END ValidationStep" + '/n')
 
+    def izmenenia(self,):
+        print("net")
+
 if __name__ == '__main__':
     MCNN = MnistCNN()
     MCNN.Mtest()
