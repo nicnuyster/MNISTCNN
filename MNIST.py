@@ -28,55 +28,43 @@ class MnistCNN():
     Class_num = 10
     Dropout_r = 0.5
 
+    # hardware
     Device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-    # def layers
-    def __init__(self, NBatches = 64):
+    Transform = transforms.Compose([
+        transforms.ToTensor(),
+        transforms.Normalize((0.5,), (0.5,))
+    ])
 
+    # Datasets
+    dataset_train = torchvision.datasets.MNIST(root = './data', train = True, transform = Transform, download = True)
+    dataset_test = torchvision.datasets.MNIST(root = './data', train = False, transform = Transform, download = True)
+
+    # a slice of data
+    loader_train = DataLoader(dataset = dataset_train, batch_size = Batches, shuffle = True)
+    loader_test = DataLoader(dataset = dataset_train, batch_size = Batches, shuffle = True)
+
+    # def layers
+    def __init__(self):
         super(MnistCNN, self).__init__()
 
-        self.Batches = NBatches
-        self.transform = transforms.Compose([
-            transforms.ToTensor(),
-            transforms.Normalize((0.5,), (0.5,))
-        ])
+        # Lout = [  Lin + 2*padding - dilation * (kernel_size - 1) -1  ]+ 1
+        #                               stride
 
-        # convs layer
+        # conv
         self.conv1 = nn.Conv2d(in_channels = 1, out_channels = 16, kernel_size = 3, stride = 1, padding = 1)
-        self.bn1 = nn.BatchNorm2d(16)
         self.conv2 = nn.Conv2d(in_channels = 16, out_channels = 32, kernel_size = 3, stride = 1, padding = 1)
-        self.bn2 = nn.BatchNorm2d(32)
-        self.pool = nn.MaxPool2d(kernel_size = 2, stride = 2)
-
-        # 1x28x28 -> 16x14x14 -> 32x7x7
-        
-        self.feature_size = 32 * 7 * 7
-
-        #FC
-        self.fc1 = nn.Linear(self.feature_size, 64)
-        self.fc2 = nn.Linear(64, self.Class_num)
-        self.drop = nn.Dropout(self.Dropout_r)
+        #relu
         self.relu = nn.ReLU()
-
-        #training
-
-        self.model = model
-
-
-    # MNIST
-    def DataLoading(self):
-        
-        dataset_train = torchvision.datasets.MNIST(root = './data', train = True, transform = self.transform, download = True)
-        dataset_test = torchvision.datasets.MNIST(root = './data', train = False, transform = self.transform, download = True)
-
-        loader_train = DataLoader(dataset_train, batch_size = self.Batches, shuffle = True)
-        loader_test = DataLoader(dataset_test, batch_size = self.Batches, shuffle = True)
-
-        return loader_train, loader_test
+        #maxpool
+        self.pool = nn.MaxPool2d(kernel_size = 2, stride = 2)
+        #fc
+        self.fc1 = nn.Linear(32*7*7, 64)
+        self.fc2 = nn.Linear(64, 10)
+        self.drop = nn.Dropout(self.Dropout_r)
 
     # Forward 
     def forward(self, x):
-        
         # conv
         x = self.pool(self.relu(self.bn1(self.conv1(x))))
         x = self.pool(self.relu(self.bn2(self.conv2(x))))
@@ -92,11 +80,33 @@ class MnistCNN():
     def PreParamsPrint(self):
 
         print(f"device - {self.Device}")
+        print(f"Learning rate - {self.Learn_rate}")
+        print(f"Numbers of Epochs - {self.Epoch_num}")
+        print(f"Number of classes(numbers) - {self.Class_num}")
+        print(f"Dropout rate - {self.Dropout_r}")
+        print(f"Transform - {self.Transform}")
 
+    def DataSetPrint(self):
+        print(f"Shape of data Train - {self.dataset_train}")
+        print(f"Shape of data Test - {self.dataset_test}")
+        print(f"Shape of loader Train - {self.loader_train}")
+        print(f"Shape of loader Test - {self.loader_test}")
+
+
+    def ModelLayersPrint(self):
+        print(f"conv1 - {self.conv1}")
+        print(f"conv2 - {self.conv2}")
+        print(f"fc1 - {self.fc1}")
+        print(f"fc2 - {self.fc2}")
+        print(f"drop - {self.drop}")
+        print(f"relu - {self.relu}")
+        print(f"pool - {self.pool}")
         
 
 if __name__ == '__main__':
-    ImportsPrint()
+    #ImportsPrint()
 
     MCNN = MnistCNN()
-    MCNN.PreParamsPrint()
+    #MCNN.PreParamsPrint()
+    #MCNN.ModelLayersPrint()
+    MCNN.DataSetPrint()
