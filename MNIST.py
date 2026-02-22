@@ -28,6 +28,8 @@ class MnistCNN():
     Class_num = 10
     Dropout_r = 0.5
 
+    Criteria = nn.CrossEntropyLoss()
+
     # hardware
     Device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -102,7 +104,7 @@ class MnistCNN():
         print(f"relu - {self.relu}")
         print(f"pool - {self.pool}")
         
-
+    def 
 if __name__ == '__main__':
     #ImportsPrint()
 
